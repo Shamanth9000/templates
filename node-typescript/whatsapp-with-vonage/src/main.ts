@@ -1,4 +1,4 @@
-import { throwIfMissing } from './utils.js';
+import { getStaticFile, throwIfMissing } from './utils.js';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import sha256 from 'sha256';
 import { fetch } from 'undici';
@@ -19,12 +19,28 @@ export default async ({ req, res, log, error }: Context) => {
     ]);
 
     log(req);
-    const token = (req.headers.authorization ?? '').split(' ')[1];
-    const decoded = jwt.verify(token, process.env.VONAGE_SIGNATURE_SECRET, {
-        algorithms: ['HS256'],
-    });
 
-    throwIfMissing(decoded, ['payload_hash']);
+    if (req.method === 'GET') {
+        return res.send(getStaticFile('index.html'), 200, {
+            'Content-Type': 'text/html; charset=utf-8',
+        });
+    }
+
+    const token: string = (req.headers.authorization ?? '').split(' ')[1];
+    const decoded: string | JwtPayload = jwt.verify(
+        token,
+        process.env.VONAGE_SIGNATURE_SECRET,
+        {
+            algorithms: ['HS256'],
+        }
+    );
+
+    try {
+        throwIfMissing(decoded, ['payload_hash']);
+    } catch (err) {
+        if (err instanceof Error)
+            return res.json({ ok: false, error: err.message }, 400);
+    }
 
     if (sha256(req.bodyRaw) !== (decoded as JwtPayload).payload_hash) {
         return res.json({ ok: false, error: 'Payload hash mismatch.' }, 401);
@@ -37,7 +53,7 @@ export default async ({ req, res, log, error }: Context) => {
             return res.json({ ok: false, error: err.message }, 400);
     }
 
-    const basicAuthToken = btoa(
+    const basicAuthToken: string = btoa(
         `${process.env.VONAGE_API_KEY}:${process.env.VONAGE_ACCOUNT_SECRET}`
     );
     await fetch(`https://messages-sandbox.nexmo.com/v1/messages`, {
