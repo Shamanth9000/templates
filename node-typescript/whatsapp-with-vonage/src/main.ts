@@ -1,7 +1,8 @@
-import { getStaticFile, throwIfMissing } from './utils.js';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import sha256 from 'sha256';
 import { fetch } from 'undici';
+
+import { getStaticFile, throwIfMissing } from './utils.js';
 
 type Context = {
     req: any;
@@ -18,14 +19,16 @@ export default async ({ req, res, log, error }: Context) => {
         'VONAGE_WHATSAPP_NUMBER',
     ]);
 
-    log(req);
-
     if (req.method === 'GET') {
         return res.send(getStaticFile('index.html'), 200, {
             'Content-Type': 'text/html; charset=utf-8',
         });
     }
 
+    /*
+     * Extract and verify the JWT token in the authorization header which is signed with your Vonage signature secret
+     * (verifies the authenticity of the request)
+     */
     const token: string = (req.headers.authorization ?? '').split(' ')[1];
     const decoded: string | JwtPayload = jwt.verify(
         token,
@@ -35,6 +38,10 @@ export default async ({ req, res, log, error }: Context) => {
         }
     );
 
+    /*
+     * Compare SHA-256 hash of the request payload to the payload_hash field found in the JWT claims
+     * (verifies the request payload has not been tampered with)
+     */
     try {
         throwIfMissing(decoded, ['payload_hash']);
     } catch (err) {
@@ -46,6 +53,7 @@ export default async ({ req, res, log, error }: Context) => {
         return res.json({ ok: false, error: 'Payload hash mismatch.' }, 401);
     }
 
+    // Send a response message through Whatsapp
     try {
         throwIfMissing(req.body, ['from', 'text']);
     } catch (err) {
@@ -56,6 +64,7 @@ export default async ({ req, res, log, error }: Context) => {
     const basicAuthToken: string = btoa(
         `${process.env.VONAGE_API_KEY}:${process.env.VONAGE_ACCOUNT_SECRET}`
     );
+
     await fetch(`https://messages-sandbox.nexmo.com/v1/messages`, {
         method: 'POST',
         body: JSON.stringify({

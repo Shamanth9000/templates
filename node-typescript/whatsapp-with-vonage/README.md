@@ -1,4 +1,4 @@
-# 💬 Node.js WhatsApp Bot with Vonage Function
+# 💬 Node.js(typescript) WhatsApp Bot with Vonage Function
 
 Simple bot to answer WhatsApp messages.
 
