@@ -1,3 +1,5 @@
+import { JsonWebTokenError } from 'jsonwebtoken';
+
 declare global {
     namespace NodeJS {
         interface ProcessEnv {
@@ -6,6 +8,12 @@ declare global {
             VONAGE_SIGNATURE_SECRET: string;
             VONAGE_WHATSAPP_NUMBER: string;
         }
+    }
+}
+
+declare module 'jsonwebtoken' {
+    export interface JwtPayload {
+        payload_hash: string;
     }
 }
 

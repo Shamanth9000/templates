@@ -1,5 +1,5 @@
 import { throwIfMissing } from './utils.js';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import sha256 from 'sha256';
 import { fetch } from 'undici';
 
@@ -18,17 +18,15 @@ export default async ({ req, res, log, error }: Context) => {
         'VONAGE_WHATSAPP_NUMBER',
     ]);
 
+    log(req);
     const token = (req.headers.authorization ?? '').split(' ')[1];
     const decoded = jwt.verify(token, process.env.VONAGE_SIGNATURE_SECRET, {
         algorithms: ['HS256'],
     });
 
-    log(req);
-    const s = sha256(req.bodyRaw);
-    log(s);
-    log(decoded);
+    throwIfMissing(decoded, ['payload_hash']);
 
-    if (sha256(req.bodyRaw) != decoded) {
+    if (sha256(req.bodyRaw) !== (decoded as JwtPayload).payload_hash) {
         return res.json({ ok: false, error: 'Payload hash mismatch.' }, 401);
     }
 
