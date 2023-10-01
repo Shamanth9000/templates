@@ -23,6 +23,11 @@ export default async ({ req, res, log, error }: Context) => {
         algorithms: ['HS256'],
     });
 
+    log(req);
+    const s = sha256(req.bodyRaw);
+    log(s);
+    log(decoded);
+
     if (sha256(req.bodyRaw) != decoded) {
         return res.json({ ok: false, error: 'Payload hash mismatch.' }, 401);
     }
