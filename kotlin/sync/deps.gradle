@@ -1,0 +1,4 @@
+dependencies {
+    implementation 'io.appwrite:sdk-for-kotlin:4.0.0'
+    implementation 'com.meilisearch.sdk:meilisearch-java:0.11.3'
+}
