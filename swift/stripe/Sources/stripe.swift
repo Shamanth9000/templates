@@ -7,7 +7,7 @@ class StripeService {
 
     init() {
         client = StripeClient(
-            httpClient: HTTPClient(), apiKey: ProcessInfo.processInfo.environment["STRIPE_SECRET_KEY"]!)
+            httpClient: HTTPClient(eventLoopGroupProvider: .singleton), apiKey: ProcessInfo.processInfo.environment["STRIPE_SECRET_KEY"]!)
     }
 
     func checkoutSubscription(context: RuntimeContext, userId: String, successUrl: String, failureUrl: String) async throws -> Session? {
