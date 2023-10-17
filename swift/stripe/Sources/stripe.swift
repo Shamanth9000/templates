@@ -8,7 +8,7 @@ class StripeService {
 
     init() {
         client = StripeClient(
-            httpClient: HTTPClient(eventLoopGroupProvider: .singleton), apiKey: ProcessInfo.processInfo.environment["STRIPE_SECRET_KEY"]!)
+            httpClient: HTTPClient(eventLoopGroupProvider: .createNew), apiKey: ProcessInfo.processInfo.environment["STRIPE_SECRET_KEY"]!)
     }
 
     func checkoutSubscription(context: RuntimeContext, userId: String, successUrl: String, failureUrl: String) async throws -> Session? {
@@ -29,7 +29,7 @@ class StripeService {
         do {
             return try await client.sessions.create(
                 lineItems: [lineItem],
-                mode: .subscription
+                mode: .subscription,
                 successUrl: successUrl,
                 cancelUrl: failureUrl,
                 clientReferenceID: userId,
@@ -38,7 +38,7 @@ class StripeService {
                     "metadata": [
                         "userId": userId,
                     ],
-                ],
+                ]
             )
         } catch {
             context.error(error)
