@@ -1,5 +1,6 @@
 import Foundation
 import AsyncHTTPClient
+import NIOCore
 import StripeKit
 
 class StripeService {
@@ -27,17 +28,17 @@ class StripeService {
 
         do {
             return try await client.sessions.create(
-                paymentMethodTypes: ["card"],
                 lineItems: [lineItem],
+                mode: .subscription
                 successUrl: successUrl,
                 cancelUrl: failureUrl,
                 clientReferenceID: userId,
+                paymentMethodTypes: ["card"],
                 subscriptionData: [
                     "metadata": [
                         "userId": userId,
                     ],
                 ],
-                mode: .subscription
             )
         } catch {
             context.error(error)
