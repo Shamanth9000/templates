@@ -32,13 +32,40 @@ class StripeService {
                 mode: .subscription,
                 successUrl: successUrl,
                 cancelUrl: failureUrl,
-                clientReferenceID: userId,
+                clientReferenceId: userId,
+                currency: nil,
+                customer: nil,
+                customerEmail: nil,
+                metadata: nil,
+                afterExpiration: nil,
+                allowPromotionCodes: nil,
+                automaticTax: nil,
+                billingAddressCollection: nil,
+                consentCollection: nil,
+                customFields: nil,
+                customText: nil,
+                customerCreation: nil,
+                customerUpdate: nil,
+                discounts: nil,
+                expiresAt: nil,
+                invoiceCreation: nil,
+                locale: nil,
+                paymentIntentData: nil,
+                paymentMethodCollection: nil,
+                paymentMethodOptions: nil,
                 paymentMethodTypes: ["card"],
+                phoneNumberCollection: nil,
+                setupIntentData: nil,
+                shippingAddressCollection: nil,
+                shippingOptions: nil,
+                submitType: SessionSubmitType? = nil,
                 subscriptionData: [
                     "metadata": [
                         "userId": userId,
                     ],
-                ]
+                ],
+                taxIdCollection: nil,
+                expand: nil
             )
         } catch {
             context.error(error)
