@@ -22,7 +22,7 @@ func main(context: RuntimeContext) async throws -> RuntimeOutput {
     // If something goes wrong, log an error
     context.error("Hello, Errors!")
 
-    // let appwriteService = AppwriteService()
+    let appwriteService = AppwriteService()
     // let stripeService = StripeService()
 
     // The `context.req` object contains the request data
