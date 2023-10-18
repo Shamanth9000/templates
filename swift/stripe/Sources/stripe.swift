@@ -58,7 +58,7 @@ class StripeService {
                 setupIntentData: nil,
                 shippingAddressCollection: nil,
                 shippingOptions: nil,
-                submitType: SessionSubmitType? = nil,
+                submitType: nil,
                 subscriptionData: [
                     "metadata": [
                         "userId": userId,
